@@ -1,98 +1,108 @@
-# Agente QA CLI
+# UDLA-QA · Agente CLI de QA y Seguridad
 
-Agente de QA basado en **Claude Code** con dos comandos listos para usar:
+Binario de línea de comandos (`udla-qa`) para automatizar pruebas de aplicaciones web, basado en **Claude Code**.
 
-- **`/qa`** — Analiza una página web, recibe o genera casos de prueba, los ejecuta en un navegador real y entrega un informe.
-- **`/qa-seguridad`** — Pruebas de seguridad / pentesting (OWASP Top 10) sobre sitios **autorizados**, con informe de hallazgos.
-- **`/agent-update`** — Trae la última versión de los comandos y la config desde el repositorio.
-
-Funciona con tu **suscripción de Claude Code** (no necesita API key). Es portable: cloná el repo en cualquier PC y los comandos aparecen solos.
-
-## Cada usuario usa su propia cuenta
-
-Claude Code usa **la cuenta logueada en cada PC**. El repo no contiene credenciales. Cada usuario:
-
-```bash
-claude        # si no hay sesión, ofrece iniciarla
-/login        # inicia sesión con SU cuenta de Claude
+```text
+╭──────────────────────────────────────────────────────────────╮
+│  ██╗   ██╗ ██████╗  ██╗       █████╗       ██████╗   █████╗   │
+│  ██║   ██║ ██║  ██║ ██║      ███████║      ██║   ██║ ███████║  │
+│  ╚██████╔╝ ██████╔╝ ███████╗ ██║  ██║      ╚██████╔╝ ██║  ██║ │
+╰──────────────────────────────────────────────────────────────╯
 ```
 
-A partir de ahí, al correr `/qa` o `/qa-seguridad` cada quien **consume sus propios tokens/suscripción**.
+- **`udla-qa analizar [url]`** — Pruebas funcionales: genera o recibe casos, los ejecuta en un navegador real y entrega un informe.
+- **`udla-qa seguridad [url]`** — Pentesting OWASP Top 10 sobre sitios **autorizados** + informe de hallazgos.
+- **`udla-qa update`** — Trae la última versión de los comandos.
+- **`udla-qa`** (sin argumentos) — Menú interactivo.
+
+Usa la **suscripción de Claude Code** de cada usuario (no necesita API key): por debajo invoca el `claude` instalado y logueado en esa PC.
 
 ---
 
 ## Requisitos
 
-- [Claude Code](https://claude.com/claude-code) instalado y con sesión iniciada (`claude`).
+- [Claude Code](https://claude.com/claude-code) instalado y con sesión iniciada (`claude` → `/login`).
 - [Node.js](https://nodejs.org) 18+ (incluye `npx`).
+
+> Cada usuario usa **su propia** cuenta de Claude y consume **sus propios** tokens. El repo no contiene credenciales.
 
 ## Instalación
 
 ```bash
-# 1. Cloná o descargá este repo
-git clone <URL-DE-TU-REPO> agente-udla
-cd agente-udla
+# 1. Cloná el repo
+git clone <URL-DE-TU-REPO> udla-qa
+cd udla-qa
 
-# 2. (Una sola vez por PC) instalá el navegador para Playwright
-npx -y playwright install chromium
+# 2. Instalá (baja el navegador Chromium para Playwright automáticamente)
+npm install
 
-# 3. Abrí Claude Code dentro de la carpeta
-claude
+# 3. Dejá disponible el comando global "udla-qa"
+npm link          # o:  npm install -g .
 ```
 
-La primera vez Claude Code te va a preguntar si confiás en el `.mcp.json` del proyecto (Playwright MCP) y si permitís las herramientas `mcp__playwright__*`. Aceptá (podés usar "always allow").
+Listo. Ya podés ejecutar `udla-qa` desde cualquier carpeta.
+
+> Si no querés instalarlo global, podés correrlo desde el repo con `node bin/udla-qa.js <comando>`.
 
 ## Uso
 
-Dentro de una sesión de Claude Code, parado en esta carpeta:
-
+```bash
+udla-qa                                  # menú interactivo
+udla-qa analizar https://mi-sitio.com    # QA funcional
+udla-qa seguridad http://localhost:3000  # pentesting (sitio autorizado)
+udla-qa update                           # actualizar
+udla-qa help                             # ayuda
 ```
-/qa https://mi-sitio.com
-/qa-seguridad https://staging.mi-app.com
-```
 
-También podés escribir solo `/qa` y el agente te irá pidiendo la URL y el alcance.
+La primera vez, Claude Code puede pedir permiso para las herramientas de Playwright; aceptá para que el navegador funcione.
 
-### `/qa` — opciones de prueba
+### `udla-qa analizar`
+
 Al ejecutarlo elegís cómo probar:
+
 1. **Describir un caso** en lenguaje natural.
 2. **Subir/pegar casos** existentes (`.md`, `.csv`, `.feature` o texto).
 3. **Generar casos** automáticamente (el agente explora la página).
 
-Los informes se guardan en `qa-reports/` (en la carpeta desde donde ejecutás).
+Los informes se guardan en `qa-reports/` del directorio donde ejecutás el comando.
 
-### `/qa-seguridad` — importante
-Solo para sitios **propios o con autorización explícita** (o entornos de práctica como [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) / DVWA). El comando confirma el alcance y la autorización antes de empezar. Las pruebas son **no destructivas** por defecto. Los informes van a `security-reports/`.
+### `udla-qa seguridad`
+
+Solo para sitios **propios o con autorización explícita** (o entornos de práctica como [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) / DVWA). El comando confirma alcance y autorización antes de empezar. Las pruebas son **no destructivas** por defecto. Los informes van a `security-reports/`.
+
+## Cómo funciona
+
+```text
+udla-qa (binario Node)
+   │  arma el prompt del agente + carga el MCP de Playwright
+   ▼
+claude  (Claude Code, ya logueado → usa tu suscripción)
+   │  maneja un navegador real vía Playwright MCP
+   ▼
+Informe en qa-reports/ o security-reports/
+```
 
 ## Estructura
 
 ```text
 .
-├── .claude/
-│   └── commands/
-│       ├── qa.md             # comando /qa
-│       ├── qa-seguridad.md   # comando /qa-seguridad
-│       └── agent-update.md   # comando /agent-update
-├── .mcp.json                 # registra el Playwright MCP (navegador real)
+├── bin/udla-qa.js          # binario CLI (entrypoint)
+├── lib/banner.js           # panel/banner ASCII
+├── .claude/commands/       # prompts del agente (fuente única)
+│   ├── qa.md
+│   ├── qa-seguridad.md
+│   └── agent-update.md
+├── .mcp.json               # registra el Playwright MCP
+├── package.json            # bin "udla-qa" + postinstall (navegador)
 ├── .gitignore
 └── README.md
 ```
 
-## Actualizar a la última versión
+> Los mismos prompts también funcionan como slash-commands (`/qa`, `/qa-seguridad`) si abrís Claude Code directamente dentro de la carpeta.
 
-Dentro de Claude Code, parado en la carpeta del proyecto:
-
-```text
-/agent-update
-```
-
-Hace `git pull`, actualiza el navegador de Playwright si hace falta y te avisa qué cambió. Después reiniciá Claude Code para recargar los comandos.
-
-## Práctica segura (recomendado)
-
-Para probar `/qa-seguridad` sin riesgo, levantá un entorno vulnerable local:
+## Práctica segura
 
 ```bash
 docker run --rm -p 3000:3000 bkimminich/juice-shop
-# luego: /qa-seguridad http://localhost:3000
+udla-qa seguridad http://localhost:3000
 ```

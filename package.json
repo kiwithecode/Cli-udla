@@ -1,0 +1,23 @@
+{
+  "name": "udla-qa",
+  "version": "1.0.0",
+  "description": "Agente CLI de QA y seguridad para web, basado en Claude Code (usa la suscripción del usuario)",
+  "bin": {
+    "udla-qa": "bin/udla-qa.js"
+  },
+  "scripts": {
+    "postinstall": "npx -y playwright install chromium",
+    "udla-qa": "node bin/udla-qa.js"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    ".claude/",
+    ".mcp.json",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
