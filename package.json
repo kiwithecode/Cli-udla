@@ -1,12 +1,12 @@
 {
   "name": "udla-qa",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Agente CLI de QA y seguridad para web, basado en Claude Code (usa la suscripción del usuario)",
   "bin": {
     "udla-qa": "bin/udla-qa.js"
   },
   "scripts": {
-    "postinstall": "npx -y playwright install chromium",
+    "postinstall": "npx -y @playwright/mcp@latest install-browser chrome-for-testing",
     "udla-qa": "node bin/udla-qa.js"
   },
   "files": [
