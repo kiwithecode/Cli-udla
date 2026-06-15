@@ -4,8 +4,20 @@ Agente de QA basado en **Claude Code** con dos comandos listos para usar:
 
 - **`/qa`** — Analiza una página web, recibe o genera casos de prueba, los ejecuta en un navegador real y entrega un informe.
 - **`/qa-seguridad`** — Pruebas de seguridad / pentesting (OWASP Top 10) sobre sitios **autorizados**, con informe de hallazgos.
+- **`/agent-update`** — Trae la última versión de los comandos y la config desde el repositorio.
 
 Funciona con tu **suscripción de Claude Code** (no necesita API key). Es portable: cloná el repo en cualquier PC y los comandos aparecen solos.
+
+## Cada usuario usa su propia cuenta
+
+Claude Code usa **la cuenta logueada en cada PC**. El repo no contiene credenciales. Cada usuario:
+
+```bash
+claude        # si no hay sesión, ofrece iniciarla
+/login        # inicia sesión con SU cuenta de Claude
+```
+
+A partir de ahí, al correr `/qa` o `/qa-seguridad` cada quien **consume sus propios tokens/suscripción**.
 
 ---
 
@@ -54,16 +66,27 @@ Solo para sitios **propios o con autorización explícita** (o entornos de prác
 
 ## Estructura
 
-```
+```text
 .
 ├── .claude/
 │   └── commands/
-│       ├── qa.md            # comando /qa
-│       └── qa-seguridad.md  # comando /qa-seguridad
-├── .mcp.json                # registra el Playwright MCP (navegador real)
+│       ├── qa.md             # comando /qa
+│       ├── qa-seguridad.md   # comando /qa-seguridad
+│       └── agent-update.md   # comando /agent-update
+├── .mcp.json                 # registra el Playwright MCP (navegador real)
 ├── .gitignore
 └── README.md
 ```
+
+## Actualizar a la última versión
+
+Dentro de Claude Code, parado en la carpeta del proyecto:
+
+```text
+/agent-update
+```
+
+Hace `git pull`, actualiza el navegador de Playwright si hace falta y te avisa qué cambió. Después reiniciá Claude Code para recargar los comandos.
 
 ## Práctica segura (recomendado)
 
