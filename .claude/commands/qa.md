@@ -36,12 +36,12 @@ Presentá los casos propuestos en una tabla (ID, Título, Pasos, Resultado esper
 Para cada caso, usando las tools de Playwright:
 - Navegá y ejecutá los pasos (`browser_navigate`, `browser_click`, `browser_type`, `browser_select_option`, etc.).
 - Verificá el resultado esperado con `browser_snapshot` y/o `browser_evaluate`.
-- Capturá evidencia con `browser_take_screenshot` (guardá en `qa-reports/evidencia/`).
+- Capturá evidencia con `browser_take_screenshot` (guardá en la subcarpeta `evidencia/` de la carpeta de salida).
 - Registrá: Estado (✅ PASS / ❌ FAIL / ⚠️ BLOCKED), lo observado vs lo esperado, y screenshot.
 Usá `TodoWrite` para ir trackeando el avance de los casos.
 
 ### 4. Entregar informe
-Generá un archivo `qa-reports/informe-qa-<fecha>.md` (creá la carpeta si no existe) con:
+Generá el informe en la **carpeta de salida** indicada (si no se indicó ninguna, usá `informes/qa/<fecha>/`) con:
 - **Resumen ejecutivo**: URL, fecha, total de casos, % aprobados, # bugs.
 - **Tabla de resultados** por caso (ID, Título, Estado, Severidad si falla).
 - **Detalle de bugs** encontrados: descripción, pasos para reproducir, resultado esperado vs obtenido, severidad (Crítica/Alta/Media/Baja), screenshot.

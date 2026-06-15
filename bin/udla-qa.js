@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 'use strict';
 
-const { spawnSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const readline = require('readline');
+const { spawnSync } = require('node:child_process');
+const fs = require('node:fs');
+const path = require('node:path');
+const readline = require('node:readline');
 const { banner, c } = require('../lib/banner');
 
 const PKG_DIR = path.join(__dirname, '..');
@@ -31,20 +31,39 @@ function ensureClaude() {
   }
 }
 
+// Crea (si no existe) la carpeta de salida con marca de tiempo y devuelve su ruta absoluta
+function ensureOutputDir(tipo) {
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19); // 2026-06-15T14-30-00
+  const dir = path.join(process.cwd(), 'informes', tipo, stamp);
+  fs.mkdirSync(path.join(dir, 'evidencia'), { recursive: true });
+  return dir;
+}
+
 // Lee un comando .md, quita el frontmatter y reemplaza $ARGUMENTS
-function buildPrompt(name, target) {
+function buildPrompt(name, target, outDir) {
   const file = path.join(COMMANDS_DIR, name + '.md');
   if (!fs.existsSync(file)) fail('No se encontró el prompt: ' + file);
   let body = fs.readFileSync(file, 'utf8');
   body = body.replace(/^---[\s\S]*?---\s*/, '');          // quita frontmatter YAML
   body = body.replace(/\$ARGUMENTS/g, target || '');       // inyecta la URL/objetivo
-  return body.trim();
+  body = body.trim();
+  // Directiva final: dónde guardar TODO lo que se genere (la carpeta ya existe)
+  body += '\n\n---\n## Carpeta de salida (obligatorio)\n' +
+    'Guardá el informe y TODA la evidencia exclusivamente dentro de esta carpeta, que YA EXISTE:\n' +
+    '`' + outDir + '`\n' +
+    '- El informe principal: `' + path.join(outDir, 'informe.md') + '`\n' +
+    '- Screenshots y evidencia: `' + path.join(outDir, 'evidencia') + '/`\n' +
+    'No crees otras carpetas de salida ni escribas informes fuera de esa ruta.';
+  return body;
 }
 
 // Lanza Claude Code en modo interactivo con el prompt y el MCP de Playwright
 function runAgent(promptName, target) {
   ensureClaude();
-  const prompt = buildPrompt(promptName, target);
+  const tipo = promptName === 'qa' ? 'qa' : 'seguridad';
+  const outDir = ensureOutputDir(tipo);
+  log(c.gray + '› Los informes se guardarán en: ' + outDir + c.reset + '\n');
+  const prompt = buildPrompt(promptName, target, outDir);
   const args = [
     '--mcp-config', MCP_CONFIG,
     '--strict-mcp-config',

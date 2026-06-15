@@ -44,7 +44,7 @@ Para pruebas activas usá payloads de **prueba de concepto no destructivos** (ej
 Confirmá cada hallazgo (evitá falsos positivos): reproducí, capturá evidencia con `browser_take_screenshot` o la respuesta HTTP. Si no podés confirmarlo, marcalo como "potencial / requiere validación manual".
 
 ### 4. Informe
-Generá `security-reports/informe-seguridad-<fecha>.md` (creá la carpeta) con:
+Generá el informe en la **carpeta de salida** indicada (si no se indicó ninguna, usá `informes/seguridad/<fecha>/`) con:
 - **Resumen ejecutivo**: alcance, fecha, # hallazgos por severidad.
 - **Tabla de hallazgos**: ID, Título, Categoría OWASP, Severidad (CVSS aprox: Crítica/Alta/Media/Baja/Info), Estado (Confirmado/Potencial).
 - **Detalle por hallazgo**: descripción, ubicación (URL/parámetro), pasos para reproducir, evidencia, impacto, y **remediación** recomendada.

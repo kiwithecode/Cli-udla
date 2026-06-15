@@ -64,11 +64,11 @@ Al ejecutarlo elegís cómo probar:
 2. **Subir/pegar casos** existentes (`.md`, `.csv`, `.feature` o texto).
 3. **Generar casos** automáticamente (el agente explora la página).
 
-Los informes se guardan en `qa-reports/` del directorio donde ejecutás el comando.
+Los informes se guardan en `informes/qa/<fecha-hora>/` del directorio donde ejecutás el comando (el binario crea la carpeta automáticamente).
 
 ### `udla-qa seguridad`
 
-Solo para sitios **propios o con autorización explícita** (o entornos de práctica como [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) / DVWA). El comando confirma alcance y autorización antes de empezar. Las pruebas son **no destructivas** por defecto. Los informes van a `security-reports/`.
+Solo para sitios **propios o con autorización explícita** (o entornos de práctica como [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) / DVWA). El comando confirma alcance y autorización antes de empezar. Las pruebas son **no destructivas** por defecto. Los informes van a `informes/seguridad/<fecha-hora>/`.
 
 ## Cómo funciona
 
@@ -79,7 +79,7 @@ udla-qa (binario Node)
 claude  (Claude Code, ya logueado → usa tu suscripción)
    │  maneja un navegador real vía Playwright MCP
    ▼
-Informe en qa-reports/ o security-reports/
+Informe en informes/<tipo>/<fecha-hora>/  (carpeta creada por el binario)
 ```
 
 ## Estructura
