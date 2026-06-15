@@ -14,7 +14,7 @@ Argumento recibido (puede venir vacío): "$ARGUMENTS"
 ### 1. Recolectar contexto
 Si NO tenés ya la URL y el alcance de pruebas, pedíselos al usuario de forma concisa. Necesitás:
 - **URL** a probar (si vino en `$ARGUMENTS`, usala directamente).
-- **Qué quiere probar.** Ofrecé estas 3 opciones y esperá su elección:
+- **Qué quiere probar.** Primero revisá si hay casos en la carpeta de casos de uso (ver sección al final): si los hay, usalos como base. Si no, ofrecé estas 3 opciones y esperá su elección:
   1. **Describir un caso** en lenguaje natural (ej: "probar login con credenciales válidas e inválidas").
   2. **Subir/pegar casos existentes** (un archivo `.md`/`.csv`/`.feature`, una ruta, o texto pegado).
   3. **Generar casos automáticamente** — vos explorás la página y proponés los casos.
@@ -40,13 +40,23 @@ Para cada caso, usando las tools de Playwright:
 - Registrá: Estado (✅ PASS / ❌ FAIL / ⚠️ BLOCKED), lo observado vs lo esperado, y screenshot.
 Usá `TodoWrite` para ir trackeando el avance de los casos.
 
-### 4. Entregar informe
+### 4. Generar pruebas automatizadas (código)
+Además de ejecutar, generá **tests automatizados de Playwright** (`@playwright/test`, en TypeScript `.spec.ts`) — un archivo por flujo/caso — en la subcarpeta `scripts/` de la carpeta de salida. Cada test debe:
+- Reproducir los pasos del caso con selectores robustos (roles/labels/`getByRole`, `getByLabel`, `getByText`), no selectores frágiles.
+- Incluir aserciones (`expect`) sobre el resultado esperado.
+- Quedar parametrizado (URL base, credenciales) vía variables de entorno, sin hardcodear secretos.
+Agregá un `README.md` corto en `scripts/` explicando cómo correrlos (`npx playwright test`) y un `playwright.config.ts` mínimo si hace falta. Así los casos quedan como **regresión automatizada** reutilizable.
+
+### 5. Entregar informe
 Generá el informe en la **carpeta de salida** indicada (si no se indicó ninguna, usá `informes/qa/<fecha>/`) con:
 - **Resumen ejecutivo**: URL, fecha, total de casos, % aprobados, # bugs.
 - **Tabla de resultados** por caso (ID, Título, Estado, Severidad si falla).
 - **Detalle de bugs** encontrados: descripción, pasos para reproducir, resultado esperado vs obtenido, severidad (Crítica/Alta/Media/Baja), screenshot.
 - **Recomendaciones**.
 Al final, mostrá el resumen en el chat e indicá la ruta del informe.
+
+## Carpeta de casos de uso (entrada opcional)
+Si no se te indicó otra ruta, buscá los casos aportados por el usuario en `casos-de-uso/` del directorio actual. Si la carpeta tiene archivos (`.md`, `.csv`, `.feature`, etc.), leelos y usalos como base de las pruebas. Si está vacía, generá los casos vos mismo o pedíselos al usuario.
 
 ## Reglas
 - Cerrá el navegador al terminar (`browser_close`).
