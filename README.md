@@ -23,10 +23,30 @@ Usa la **suscripción de Claude Code** de cada usuario (no necesita API key): po
 
 ## Requisitos (todos los SO)
 
-- [**Node.js**](https://nodejs.org) 18 o superior (incluye `npm`/`npx`).
-- [**Claude Code**](https://claude.com/claude-code) instalado y con sesión iniciada (se hace una sola vez: `claude` y luego `/login`).
-- [**Git**](https://git-scm.com) (para clonar y para `udla-qa update`).
-- Solo para `udla-qa carga`: [**k6**](https://grafana.com/docs/k6/latest/set-up/install-k6/) (el comando avisa si falta).
+Primero **verificá si ya los tenés** (si el comando devuelve una versión, está instalado):
+
+```bash
+node -v             # Node.js 18+
+git --version       # Git
+claude --version    # Claude Code
+k6 version          # k6 (solo para "udla-qa carga")
+```
+
+Si **alguno falta**, instalalo con el comando de tu sistema operativo:
+
+| Requisito | macOS (Homebrew) | Windows (winget) | Linux (Debian/Ubuntu) |
+| --- | --- | --- | --- |
+| **Node.js 18+** | `brew install node` | `winget install OpenJS.NodeJS` | `curl -fsSL https://deb.nodesource.com/setup_lts.x \| sudo -E bash - && sudo apt-get install -y nodejs` |
+| **Git** | `brew install git` | `winget install Git.Git` | `sudo apt-get install -y git` |
+| **Claude Code** | `npm install -g @anthropic-ai/claude-code` | `npm install -g @anthropic-ai/claude-code` | `npm install -g @anthropic-ai/claude-code` |
+| **k6** (opcional) | `brew install k6` | `winget install k6.k6` | ver bloque Linux abajo |
+
+Después de instalar **Claude Code**, iniciá sesión una sola vez:
+
+```bash
+claude              # se abre y te pide iniciar sesión
+/login              # entrá con TU cuenta de Claude
+```
 
 > Cada usuario usa **su propia** cuenta de Claude y consume **sus propios** tokens. El repo no contiene credenciales.
 
