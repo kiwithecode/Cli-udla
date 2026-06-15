@@ -1,0 +1,10 @@
+# Informes generados por los comandos
+qa-reports/
+security-reports/
+
+# Dependencias / artefactos
+node_modules/
+.DS_Store
+
+# Config local de Claude Code (permisos por usuario)
+.claude/settings.local.json
