@@ -52,16 +52,32 @@ claude              # se abre y te pide iniciar sesión
 
 ## Instalación
 
-### Pasos comunes (cualquier SO)
+### Recomendada — instalar sin clonar (un solo comando)
 
 ```bash
-git clone <URL-DE-TU-REPO> udla-qa
+npm install -g github:kiwithecode/Cli-udla
+```
+
+Eso deja el comando **`udla-qa`** disponible desde cualquier carpeta (el `postinstall` baja solo el navegador Chromium para Playwright). No hace falta clonar el repo.
+
+Para **actualizar** a la última versión, simplemente:
+
+```bash
+udla-qa update      # reinstala desde GitHub (o, si clonaste, hace git pull)
+```
+
+> Necesitás tener antes los **requisitos** (Node 18+, Claude Code logueado; k6 es opcional). Ver más abajo.
+
+### Alternativa — clonar (para desarrollo)
+
+```bash
+git clone https://github.com/kiwithecode/Cli-udla.git udla-qa
 cd udla-qa
 npm install        # baja el navegador Chromium para Playwright (postinstall)
 npm link           # deja disponible el comando global "udla-qa"
 ```
 
-Después podés ejecutar `udla-qa` desde cualquier carpeta. (Si preferís no instalarlo global, corré `node bin/udla-qa.js <comando>` desde el repo.)
+Si preferís no instalarlo global, corré `node bin/udla-qa.js <comando>` desde el repo.
 
 Abajo, cómo dejar listos los **requisitos** en cada sistema operativo.
 

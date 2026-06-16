@@ -1,10 +1,19 @@
 {
   "name": "udla-qa",
-  "version": "1.6.0",
+  "version": "1.6.1",
   "description": "Agente CLI de QA y seguridad para web, basado en Claude Code (usa la suscripción del usuario)",
   "bin": {
     "udla-qa": "bin/udla-qa.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kiwithecode/Cli-udla.git"
+  },
+  "homepage": "https://github.com/kiwithecode/Cli-udla#readme",
+  "bugs": {
+    "url": "https://github.com/kiwithecode/Cli-udla/issues"
+  },
+  "preferGlobal": true,
   "scripts": {
     "postinstall": "npx -y @playwright/mcp@latest install-browser chrome-for-testing",
     "udla-qa": "node bin/udla-qa.js"
