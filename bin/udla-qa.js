@@ -23,6 +23,8 @@ const target = rest.join(' ').trim();
       await runAgent('seguridad', target); break;
     case 'carga': case 'rendimiento': case 'k6': case 'performance':
       await runAgent('carga', target); break;
+    case 'servicio': case 'api': case 'rest': case 'endpoint':
+      await runAgent('servicio', target); break;
     case 'auditar': case 'auditoria': case 'audit': case 'repo':
       await runAgent('auditar', target); break;
     case 'update': case 'actualizar':
