@@ -1,6 +1,6 @@
 {
   "name": "udla-qa",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "description": "Agente CLI de QA y seguridad para web, basado en Claude Code (usa la suscripción del usuario)",
   "bin": {
     "udla-qa": "bin/udla-qa.js"
