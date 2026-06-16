@@ -1,9 +1,25 @@
 {
   "name": "udla-qa",
-  "version": "1.6.1",
+  "version": "1.6.2",
   "description": "Agente CLI de QA y seguridad para web, basado en Claude Code (usa la suscripción del usuario)",
+  "keywords": [
+    "qa",
+    "testing",
+    "security",
+    "pentesting",
+    "playwright",
+    "k6",
+    "postman",
+    "api-testing",
+    "claude",
+    "cli"
+  ],
+  "author": "Kevin Armas",
   "bin": {
     "udla-qa": "bin/udla-qa.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
