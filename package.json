@@ -1,6 +1,6 @@
 {
   "name": "udla-qa",
-  "version": "1.6.2",
+  "version": "1.6.3",
   "description": "Agente CLI de QA y seguridad para web, basado en Claude Code (usa la suscripción del usuario)",
   "keywords": [
     "qa",

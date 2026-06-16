@@ -1,94 +1,105 @@
 # UDLA-QA · Agente CLI de QA y Seguridad
 
-Binario de línea de comandos (`udla-qa`) para automatizar pruebas de aplicaciones web, basado en **Claude Code**.
+[![npm](https://img.shields.io/npm/v/udla-qa.svg)](https://www.npmjs.com/package/udla-qa)
+[![node](https://img.shields.io/node/v/udla-qa.svg)](https://nodejs.org)
+[![license](https://img.shields.io/npm/l/udla-qa.svg)](LICENSE)
+
+Binario de línea de comandos (`udla-qa`) para automatizar pruebas de aplicaciones web y APIs, basado en **Claude Code**. Genera casos, ejecuta en un navegador/API reales y entrega un **informe** — todo desde la terminal.
 
 ```text
-╭──────────────────────────────────────────────────────────────╮
-│  ██╗   ██╗ ██████╗  ██╗       █████╗       ██████╗   █████╗   │
-│  ██║   ██║ ██║  ██║ ██║      ███████║      ██║   ██║ ███████║  │
-│  ╚██████╔╝ ██████╔╝ ███████╗ ██║  ██║      ╚██████╔╝ ██║  ██║ │
-╰──────────────────────────────────────────────────────────────╯
+██╗   ██╗ ██████╗  ██╗       █████╗       ██████╗   █████╗
+██║   ██║ ██║  ██║ ██║      ███████║      ██║   ██║ ███████║
+╚██████╔╝ ██████╔╝ ███████╗ ██║  ██║      ╚██████╔╝ ██║  ██║
+ ╚═════╝  ╚═════╝  ╚══════╝ ╚═╝  ╚═╝       ╚═════╝  ╚═╝  ╚═╝
+        Desarrollado por Kevin Armas · Universidad de Las Américas
 ```
 
-- **`udla-qa analizar [url]`** — QA funcional (**caja negra**): genera o recibe casos, los ejecuta en un navegador real, **genera tests automatizados** (Playwright) y entrega un informe.
-- **`udla-qa seguridad [url]`** — Pentesting OWASP Top 10 de la web corriendo (**caja negra**) sobre sitios **autorizados** + informe.
-- **`udla-qa carga [api]`** — Rendimiento con **k6**: genera y ejecuta pruebas de **carga, estrés y pico**; pregunta cuántos usuarios (VUs) simular.
-- **`udla-qa auditar [ruta]`** — Auditoría del **código fuente** de un repo (**caja blanca**) para prevenir vulnerabilidades y fallas.
-- **`udla-qa update`** — Trae la última versión de los comandos.
-- **`udla-qa`** (sin argumentos) — Menú interactivo.
-
-Usa la **suscripción de Claude Code** de cada usuario (no necesita API key): por debajo invoca el `claude` instalado y logueado en esa PC.
+> Usa la **suscripción de Claude Code** de cada usuario (no necesita API key): por debajo invoca el `claude` instalado y logueado en esa PC. Cada uno consume **sus propios** tokens; el repo no contiene credenciales.
 
 ---
 
-## Requisitos (todos los SO)
+## Comandos
 
-Primero **verificá si ya los tenés** (si el comando devuelve una versión, está instalado):
+| Comando | Tipo | Qué hace |
+| --- | --- | --- |
+| `udla-qa analizar [url]` | Web · caja negra | Genera/recibe casos, los ejecuta en un navegador real, **genera tests Playwright** y entrega informe. **Asistido**: propone un plan y lo aprobás. |
+| `udla-qa servicio [url]` | API REST · caja negra | Pruebas de API: casos (con ✅/❌), **colección Postman** ejecutable, corre el run (newman/curl) e informa. **Asistido** + soporta **archivo** de varios endpoints. |
+| `udla-qa seguridad [url]` | Web · caja negra | Pentesting **OWASP Top 10** sobre sitios **autorizados** + informe de hallazgos. |
+| `udla-qa carga [api]` | API · rendimiento | Pruebas de **carga, estrés y pico** con **k6**; pregunta cuántos usuarios (VUs) simular. |
+| `udla-qa auditar [ruta]` | Código · caja blanca | Auditoría del **código fuente** de un repo (solo lectura) para prevenir vulnerabilidades. |
+| `udla-qa update` | — | Trae la última versión (npm o, si clonaste, `git pull`). |
+| `udla-qa` | — | **Menú interactivo** (si no pasás comando). |
+| `udla-qa help` | — | Ayuda. |
+
+Mientras la IA trabaja vas viendo una **barra de progreso**; al terminar, la ruta del informe.
+
+---
+
+## Requisitos
+
+Verificá primero si ya los tenés (si devuelve una versión, está instalado):
 
 ```bash
 node -v             # Node.js 18+
-git --version       # Git
-claude --version    # Claude Code
+claude --version    # Claude Code (obligatorio)
+git --version       # Git (solo si vas a clonar)
 k6 version          # k6 (solo para "udla-qa carga")
 ```
 
-Si **alguno falta**, instalalo con el comando de tu sistema operativo:
+Si falta alguno, instalalo según tu sistema operativo:
 
 | Requisito | macOS (Homebrew) | Windows (winget) | Linux (Debian/Ubuntu) |
 | --- | --- | --- | --- |
 | **Node.js 18+** | `brew install node` | `winget install OpenJS.NodeJS` | `curl -fsSL https://deb.nodesource.com/setup_lts.x \| sudo -E bash - && sudo apt-get install -y nodejs` |
-| **Git** | `brew install git` | `winget install Git.Git` | `sudo apt-get install -y git` |
-| **Claude Code** | `npm install -g @anthropic-ai/claude-code` | `npm install -g @anthropic-ai/claude-code` | `npm install -g @anthropic-ai/claude-code` |
+| **Claude Code** | `npm install -g @anthropic-ai/claude-code` | igual | igual |
+| **Git** (opcional) | `brew install git` | `winget install Git.Git` | `sudo apt-get install -y git` |
 | **k6** (opcional) | `brew install k6` | `winget install k6.k6` | ver bloque Linux abajo |
 
-Después de instalar **Claude Code**, iniciá sesión una sola vez:
+Después de instalar **Claude Code**, iniciá sesión **una sola vez**:
 
 ```bash
 claude              # se abre y te pide iniciar sesión
 /login              # entrá con TU cuenta de Claude
 ```
 
-> Cada usuario usa **su propia** cuenta de Claude y consume **sus propios** tokens. El repo no contiene credenciales.
+---
 
 ## Instalación
 
-### Recomendada — instalar desde npm (un solo comando)
+### Recomendada — desde npm (un comando, sin clonar)
 
 ```bash
 npm install -g udla-qa
 ```
 
-Eso deja el comando **`udla-qa`** disponible desde cualquier carpeta (el `postinstall` baja solo el navegador Chromium para Playwright). No hace falta clonar el repo.
+Deja el comando **`udla-qa`** disponible desde cualquier carpeta (el `postinstall` baja solo el navegador Chromium para Playwright).
 
-Para **actualizar** a la última versión, simplemente:
+**Actualizar:**
 
 ```bash
-udla-qa update      # reinstala udla-qa@latest desde npm (o, si clonaste, hace git pull)
+udla-qa update      # reinstala udla-qa@latest desde npm
 ```
 
-> Necesitás tener antes los **requisitos** (Node 18+, Claude Code logueado; k6 es opcional). Ver más abajo.
+> Alternativa sin esperar a npm: `npm install -g github:kiwithecode/Cli-udla`.
 
-Alternativa (instalar desde GitHub): `npm install -g github:kiwithecode/Cli-udla`.
-
-### Alternativa — clonar (para desarrollo)
+### Para desarrollo — clonando el repo
 
 ```bash
 git clone https://github.com/kiwithecode/Cli-udla.git udla-qa
 cd udla-qa
-npm install        # baja el navegador Chromium para Playwright (postinstall)
-npm link           # deja disponible el comando global "udla-qa"
+npm install        # postinstall: baja el navegador de Playwright
+npm link           # expone el comando global "udla-qa"
 ```
 
-Si preferís no instalarlo global, corré `node bin/udla-qa.js <comando>` desde el repo.
+Si preferís no instalarlo global: `node bin/udla-qa.js <comando>` desde el repo. En este modo, `udla-qa update` hace `git pull`.
 
-Abajo, cómo dejar listos los **requisitos** en cada sistema operativo.
+<details>
+<summary><b>Comandos por sistema operativo (requisitos completos)</b></summary>
 
 ### 🍎 macOS
 
 ```bash
-# Node + git + k6 con Homebrew (https://brew.sh)
 brew install node git k6
-# Claude Code
 npm install -g @anthropic-ai/claude-code
 claude            # abrí una vez y ejecutá /login
 ```
@@ -96,112 +107,147 @@ claude            # abrí una vez y ejecutá /login
 ### 🪟 Windows (PowerShell)
 
 ```powershell
-# Node + git + k6 con winget
 winget install OpenJS.NodeJS Git.Git k6.k6
-# Claude Code
 npm install -g @anthropic-ai/claude-code
 claude            # abrí una vez y ejecutá /login
 ```
 
-> En Windows, usá **PowerShell** o **Windows Terminal** para que el banner ASCII y los colores se vean bien. Si usás WSL, seguí los pasos de Linux.
+> Usá **PowerShell** o **Windows Terminal** para que el banner ASCII y los colores se vean bien. Con WSL, seguí los pasos de Linux.
 
 ### 🐧 Linux (Debian/Ubuntu)
 
 ```bash
-# Node 18+ (NodeSource) y git
 curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
 sudo apt-get install -y nodejs git
 # k6 (repo oficial de Grafana)
 sudo gpg -k && sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
 echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
 sudo apt-get update && sudo apt-get install -y k6
-# Claude Code
 npm install -g @anthropic-ai/claude-code
 claude            # abrí una vez y ejecutá /login
 ```
 
+</details>
+
+---
+
 ## Uso
 
 ```bash
-udla-qa                                  # menú interactivo
-udla-qa analizar https://mi-sitio.com    # QA funcional (caja negra)
-udla-qa seguridad http://localhost:3000  # pentesting web (caja negra)
-udla-qa carga https://api.mi-sitio/v1    # carga/estrés/pico con k6
-udla-qa auditar ./mi-repo                # auditoría de código (caja blanca)
-udla-qa update                           # actualizar
-udla-qa help                             # ayuda
+udla-qa                                       # menú interactivo
+udla-qa analizar https://mi-sitio.com         # QA funcional (caja negra)
+udla-qa servicio https://api.mi-sitio/v1/users  # pruebas de API REST
+udla-qa seguridad http://localhost:3000       # pentesting web (caja negra)
+udla-qa carga https://api.mi-sitio/v1         # carga/estrés/pico con k6
+udla-qa auditar ./mi-repo                     # auditoría de código (caja blanca)
+udla-qa update                                # actualizar
+udla-qa help                                  # ayuda
 ```
 
 La primera vez, Claude Code puede pedir permiso para las herramientas de Playwright; aceptá para que el navegador funcione.
 
-### `udla-qa analizar` (caja negra · funcional)
+Los resultados se guardan siempre en `informes/<tipo>/<fecha-hora>/` del directorio actual (informe + evidencia + scripts).
 
-Casos de prueba de tres fuentes posibles:
+### `udla-qa analizar` — Web funcional (caja negra)
 
-1. **Carpeta `casos-de-uso/`** (opcional): si dejás archivos ahí (`.md`, `.csv`, `.feature`…), el agente los usa como base.
+Flujo **asistido**: el agente explora la página, **propone un plan de casos** y lo mostrá para que lo **apruebes o ajustes**. Los casos pueden venir de tres fuentes:
+
+1. **Carpeta `casos-de-uso/`** (opcional): dejás archivos (`.md`, `.csv`, `.feature`…) y los usa como base.
 2. **Describir/pegar** un caso en el momento.
-3. **Generar** automáticamente (el agente explora la página).
+3. **Generar** automáticamente (explora la página).
 
-Ejecuta los casos en navegador real, **genera tests automatizados de Playwright** (en `scripts/`) reutilizables como regresión, y guarda todo en `informes/qa/<fecha-hora>/`.
+Ejecuta en navegador real, **genera tests de Playwright** (en `scripts/`) reutilizables como regresión, y guarda todo en `informes/qa/<fecha-hora>/`.
 
-### `udla-qa seguridad` (caja negra · web corriendo)
+### `udla-qa servicio` — API REST (caja negra)
 
-Pentesting OWASP. Solo para sitios **propios o con autorización explícita** (o entornos de práctica como [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) / DVWA). Confirma alcance y autorización antes de empezar. Pruebas **no destructivas** por defecto. Informes en `informes/seguridad/<fecha-hora>/`.
+Flujo **asistido** para probar APIs:
 
-### `udla-qa carga` (rendimiento · k6)
+1. Elegís **método** (GET/POST/PUT/PATCH/DELETE), **headers/auth**, **delay** y **body** (JSON inline o ruta a `.json`).
+   O bien, en el menú, dejás la URL vacía e indicás un **archivo con varios endpoints** (curls, **OpenAPI/Swagger**, una **colección Postman** ya hecha, CSV o lista).
+2. El agente **propone los casos** (happy path ✅, auth 🔒, validaciones 🧪, 404/405 🚫, tiempo ⏱️) y los aprobás.
+3. Genera una **colección Postman v2.1.0** importable, la **ejecuta** (newman, o `curl` de fallback) y te muestra la **tabla de resultados** con ✅/❌ en la consola.
 
-Pregunta el endpoint, **cuántos usuarios virtuales (VUs)** y la duración, genera scripts de **k6** para **carga, estrés y pico** (en `scripts/`), los ejecuta y resume las métricas (latencia p95/p99, RPS, % errores, punto de quiebre) en `informes/carga/<fecha-hora>/`. Solo contra APIs propias/autorizadas; sugiere staging antes que producción.
+Salida en `informes/servicio/<fecha-hora>/`: `informe.md` + `scripts/coleccion.postman_collection.json` + `scripts/resultado.json`.
 
-### `udla-qa auditar` (caja blanca · código)
+**Re-correr la colección** después, sin la IA:
 
-Analiza el **código fuente** de un repo (sin ejecutarlo) buscando inyección, secretos hardcodeados, fallas de auth/cripto, malas configuraciones y **dependencias vulnerables** (`npm audit`, etc.), con remediación por hallazgo. Es **solo lectura**: no modifica el repo. Informe en `informes/auditoria/<fecha-hora>/`.
+```bash
+npx newman run informes/servicio/<fecha-hora>/scripts/coleccion.postman_collection.json
+```
+
+…o importarla en **Postman** → *Runner* → *Run*.
+
+### `udla-qa seguridad` — Pentesting OWASP (caja negra)
+
+Solo para sitios **propios o con autorización explícita** (o entornos de práctica como [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) / DVWA). Confirma alcance y autorización antes de empezar. Pruebas **no destructivas** por defecto. Informes en `informes/seguridad/<fecha-hora>/`.
+
+### `udla-qa carga` — Rendimiento (k6)
+
+Pregunta el endpoint, **cuántos usuarios virtuales (VUs)** y la duración; genera scripts de **k6** para **carga, estrés y pico**, los ejecuta y resume métricas (latencia p95/p99, RPS, % errores, punto de quiebre) en `informes/carga/<fecha-hora>/`. Solo contra APIs propias/autorizadas; sugiere staging antes que producción.
+
+### `udla-qa auditar` — Código fuente (caja blanca)
+
+Analiza el **código** de un repo (sin ejecutarlo) buscando inyección, secretos hardcodeados, fallas de auth/cripto, malas configuraciones y **dependencias vulnerables** (`npm audit`, etc.), con remediación por hallazgo. Es **solo lectura**: no modifica el repo. Informe en `informes/auditoria/<fecha-hora>/`.
+
+---
 
 ## Cómo funciona
 
 ```text
 udla-qa (binario Node)
-   │  arma el prompt del agente + carga el MCP de Playwright
+   │  hace TODAS las preguntas en el CLI y arma el prompt del agente
+   │  (para web/API: propone un plan y espera tu aprobación)
    ▼
 claude  (Claude Code, ya logueado → usa tu suscripción)
-   │  maneja un navegador real vía Playwright MCP
+   │  navegador real vía Playwright MCP · curl/newman/k6 vía Bash
    ▼
-Informe en informes/<tipo>/<fecha-hora>/  (carpeta creada por el binario)
+informes/<tipo>/<fecha-hora>/   (carpeta creada por el binario)
+   ├── informe.md      · evidencia/   · scripts/
 ```
 
-## Estructura
+---
 
-El código del binario está separado por lógica en módulos dentro de `lib/`:
+## Estructura
 
 ```text
 .
 ├── bin/
 │   └── udla-qa.js          # entrypoint: solo enruta el comando
 ├── lib/
-│   ├── banner.js           # banner/panel ASCII (con versión)
+│   ├── banner.js           # banner/panel ASCII (con versión y autor)
+│   ├── style.js            # lenguaje visual: pasos, ✔/✖/⚠, kv, reglas, bloques
+│   ├── spinner.js          # barra de progreso 1→100%
+│   ├── proc.js             # spawn multiplataforma (npx/claude/git en Windows)
 │   ├── config.js           # rutas y metadatos compartidos
-│   ├── commands.js         # registro de comandos (prompt, tools, salida)
+│   ├── commands.js         # registro de comandos (prompt, tools, plan, salida)
 │   ├── output.js           # carpetas de entrada/salida + armado del prompt
-│   ├── runner.js           # lanza Claude Code y maneja "update"
+│   ├── runner.js           # lanza Claude Code, flujo con plan y "update"
 │   ├── ui.js               # ayuda y menú interactivo
 │   └── util.js             # helpers de consola (log, fail)
 ├── .claude/commands/       # prompts del agente (fuente única)
-│   ├── qa.md               # /qa  · analizar
-│   ├── qa-seguridad.md     # /qa-seguridad
-│   ├── qa-carga.md         # /qa-carga  (k6)
-│   ├── qa-auditar.md       # /qa-auditar (caja blanca)
+│   ├── qa.md               # analizar
+│   ├── qa-servicio.md      # servicio (API REST)
+│   ├── qa-seguridad.md     # seguridad
+│   ├── qa-carga.md         # carga (k6)
+│   ├── qa-auditar.md       # auditar (caja blanca)
 │   └── agent-update.md
 ├── casos-de-uso/           # casos de uso de entrada (opcional)
 ├── .mcp.json               # registra el Playwright MCP
 ├── package.json            # bin "udla-qa" + postinstall (navegador)
-├── .gitignore
 └── README.md
 ```
 
-> Los mismos prompts también funcionan como slash-commands (`/qa`, `/qa-seguridad`, `/qa-carga`, `/qa-auditar`) si abrís Claude Code directamente dentro de la carpeta.
+> Los mismos prompts también funcionan como slash-commands (`/qa`, `/qa-servicio`, `/qa-seguridad`, `/qa-carga`, `/qa-auditar`) si abrís Claude Code dentro de la carpeta.
+
+---
 
 ## Práctica segura
+
+Probá contra un entorno de práctica antes que contra algo real:
 
 ```bash
 docker run --rm -p 3000:3000 bkimminich/juice-shop
 udla-qa seguridad http://localhost:3000
 ```
+
+> Corré `seguridad`, `carga` y `servicio` **solo** sobre sistemas propios o con autorización explícita.
