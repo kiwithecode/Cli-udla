@@ -24,6 +24,7 @@ Binario de línea de comandos (`udla-qa`) para automatizar pruebas de aplicacion
 | --- | --- | --- |
 | `udla-qa analizar [url]` | Web · caja negra | Genera/recibe casos, los ejecuta en un navegador real, **genera tests Playwright** y entrega informe. **Asistido**: propone un plan y lo aprobás. |
 | `udla-qa servicio [url]` | API REST · caja negra | Pruebas de API: casos (con ✅/❌), **colección Postman** ejecutable, corre el run (newman/curl) e informa. **Asistido** + soporta **archivo** de varios endpoints. |
+| `udla-qa movil [app]` | App móvil · caja negra | Apps **Flutter/nativas** (Android/iOS) con **Maestro**: genera flujos, los corre en emulador/simulador y reporta ✅/❌. **Asistido**. |
 | `udla-qa seguridad [url]` | Web · caja negra | Pentesting **OWASP Top 10** sobre sitios **autorizados** + informe de hallazgos. |
 | `udla-qa carga [api]` | API · rendimiento | Pruebas de **carga, estrés y pico** con **k6**; pregunta cuántos usuarios (VUs) simular. |
 | `udla-qa auditar [ruta]` | Código · caja blanca | Auditoría del **código fuente** de un repo (solo lectura) para prevenir vulnerabilidades. |
@@ -54,6 +55,7 @@ Si falta alguno, instalalo según tu sistema operativo:
 | **Claude Code** | `npm install -g @anthropic-ai/claude-code` | igual | igual |
 | **Git** (opcional) | `brew install git` | `winget install Git.Git` | `sudo apt-get install -y git` |
 | **k6** (opcional) | `brew install k6` | `winget install k6.k6` | ver bloque Linux abajo |
+| **Maestro** (opcional, para `movil`) | `curl -fsSL "https://get.maestro.mobile.dev" \| bash` | usar **WSL** + comando de Linux | `curl -fsSL "https://get.maestro.mobile.dev" \| bash` |
 
 Después de instalar **Claude Code**, iniciá sesión **una sola vez**:
 
@@ -177,6 +179,25 @@ npx newman run informes/servicio/<fecha-hora>/scripts/coleccion.postman_collecti
 
 …o importarla en **Postman** → *Runner* → *Run*.
 
+### `udla-qa movil` — App móvil Flutter/nativa (caja negra)
+
+Flujo **asistido** para apps **Flutter** y **nativas** (Android/iOS) con [**Maestro**](https://maestro.mobile.dev):
+
+1. Elegís **plataforma** (Android / iOS / ambas) e indicás la **app**: su `appId` (`com.miapp`) si ya está instalada, o la ruta a un `.apk`/`.app`/`.ipa` para instalarla.
+2. Definís los **flujos** (describir, archivo `.yaml`/`.md`/`.csv`, o explorar automáticamente).
+3. El agente **propone los flujos** (happy path ✅, auth 🔒, validaciones 🧪, navegación 🔁, resiliencia 📵) y los aprobás.
+4. Genera flujos **Maestro** (`.yaml`), los **ejecuta** en emulador/simulador y muestra la **tabla ✅/❌** con capturas.
+
+Salida en `informes/movil/<fecha-hora>/`: `informe.md` + `scripts/*.yaml` + `scripts/resultado.xml` + capturas en `evidencia/`.
+
+**Requiere:** Maestro instalado y un **emulador Android** / **simulador iOS** (Mac) corriendo con la app. *Nota Flutter:* Maestro ubica elementos por texto y por labels de accesibilidad/semántica — conviene que la app exponga `Semantics(label:)`/`Key`. Para tests más profundos en Flutter existe **Patrol / `integration_test`** (Dart).
+
+**Re-correr los flujos** después, sin la IA:
+
+```bash
+maestro test informes/movil/<fecha-hora>/scripts/
+```
+
 ### `udla-qa seguridad` — Pentesting OWASP (caja negra)
 
 Solo para sitios **propios o con autorización explícita** (o entornos de práctica como [OWASP Juice Shop](https://owasp.org/www-project-juice-shop/) / DVWA). Confirma alcance y autorización antes de empezar. Pruebas **no destructivas** por defecto. Informes en `informes/seguridad/<fecha-hora>/`.
@@ -227,6 +248,7 @@ informes/<tipo>/<fecha-hora>/   (carpeta creada por el binario)
 ├── .claude/commands/       # prompts del agente (fuente única)
 │   ├── qa.md               # analizar
 │   ├── qa-servicio.md      # servicio (API REST)
+│   ├── qa-movil.md         # movil (Flutter/nativa · Maestro)
 │   ├── qa-seguridad.md     # seguridad
 │   ├── qa-carga.md         # carga (k6)
 │   ├── qa-auditar.md       # auditar (caja blanca)
@@ -237,7 +259,7 @@ informes/<tipo>/<fecha-hora>/   (carpeta creada por el binario)
 └── README.md
 ```
 
-> Los mismos prompts también funcionan como slash-commands (`/qa`, `/qa-servicio`, `/qa-seguridad`, `/qa-carga`, `/qa-auditar`) si abrís Claude Code dentro de la carpeta.
+> Los mismos prompts también funcionan como slash-commands (`/qa`, `/qa-servicio`, `/qa-movil`, `/qa-seguridad`, `/qa-carga`, `/qa-auditar`) si abrís Claude Code dentro de la carpeta.
 
 ---
 

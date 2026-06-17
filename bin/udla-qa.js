@@ -25,6 +25,8 @@ const target = rest.join(' ').trim();
       await runAgent('carga', target); break;
     case 'servicio': case 'api': case 'rest': case 'endpoint':
       await runAgent('servicio', target); break;
+    case 'movil': case 'mobile': case 'app': case 'flutter':
+      await runAgent('movil', target); break;
     case 'auditar': case 'auditoria': case 'audit': case 'repo':
       await runAgent('auditar', target); break;
     case 'update': case 'actualizar':
